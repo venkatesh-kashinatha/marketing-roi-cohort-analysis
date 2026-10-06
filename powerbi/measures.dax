@@ -1,0 +1,33 @@
+// Power BI measures for the Marketing ROI and Cohort Analysis project.
+// Create each one with Modeling > New measure, pasting the line after the name.
+// Tables come from output/marts (see README, step 7). "Measured" means sign-ups with a full
+// 180 days of history, and the spend over the same dates, so campaigns compare fairly.
+
+// ---------- Volume (measured window)
+Spend (measured) = CALCULATE ( SUM ( fact_spend[spend] ), fact_spend[in_mature_window] = 1 )
+Sign-ups (measured) = CALCULATE ( COUNTROWS ( fact_users ), fact_users[is_mature] = 1 )
+Customers (180d) = CALCULATE ( SUM ( fact_users[converted_in_horizon] ), fact_users[is_mature] = 1 )
+Revenue (180d) = CALCULATE ( SUM ( fact_users[revenue_in_horizon] ), fact_users[is_mature] = 1 )
+Gross Profit (180d) = CALCULATE ( SUM ( fact_users[gross_profit_in_horizon] ), fact_users[is_mature] = 1 )
+
+// ---------- Efficiency and return
+CAC = DIVIDE ( [Spend (measured)], [Customers (180d)] )
+Cost per Sign-up = DIVIDE ( [Spend (measured)], [Sign-ups (measured)] )
+Conversion (180d) = DIVIDE ( [Customers (180d)], [Sign-ups (measured)] )
+Conversion (7d) = DIVIDE ( CALCULATE ( SUM ( fact_users[converted_7d] ), fact_users[is_mature] = 1 ), [Sign-ups (measured)] )
+ROAS (180d) = DIVIDE ( [Revenue (180d)], [Spend (measured)] )
+ROI (180d) = DIVIDE ( [Gross Profit (180d)] - [Spend (measured)], [Spend (measured)] )
+GP per Customer = DIVIDE ( [Gross Profit (180d)], [Customers (180d)] )
+LTV to CAC = DIVIDE ( [GP per Customer], [CAC] )
+
+// ---------- Cohorts and payback (pre-built marts, so the maturity rules are already applied)
+Cohort Conversion % = DIVIDE ( SUM ( mart_cohort_conversion[customers_cum] ), SUM ( mart_cohort_conversion[signups] ) )
+Payback Ratio = DIVIDE ( SUM ( mart_payback[gross_profit_cum] ), SUM ( mart_payback[spend] ) )
+
+// ---------- Monthly trend (operational view, all dates)
+Spend (monthly) = SUM ( mart_channel_monthly[spend] )
+New Customers (monthly) = SUM ( mart_channel_monthly[new_customers] )
+Monthly CAC = DIVIDE ( [Spend (monthly)], [New Customers (monthly)] )
+
+// ---------- Colour rule for ROI bars (Format > Bars > fx > Field value)
+ROI Colour = SWITCH ( TRUE (), ISBLANK ( [ROI (180d)] ), "#BFBFBF", [ROI (180d)] >= 0.5, "#2E7D32", [ROI (180d)] < 0, "#C62828", "#F9A825" )

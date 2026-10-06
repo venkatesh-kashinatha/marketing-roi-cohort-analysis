@@ -1,0 +1,15 @@
+{
+  "name": "Marketing ROI",
+  "dataColors": ["#1F3A5F", "#3E7CB1", "#1D6F6A", "#81A4CD", "#F2A541", "#C8553D", "#6C757D", "#8E6C8A"],
+  "background": "#FFFFFF",
+  "foreground": "#1F2328",
+  "tableAccent": "#1F3A5F",
+  "good": "#2E7D32",
+  "neutral": "#F9A825",
+  "bad": "#C62828",
+  "textClasses": {
+    "title": {"fontFace": "Segoe UI Semibold", "fontSize": 13, "color": "#1F3A5F"},
+    "label": {"fontFace": "Segoe UI", "fontSize": 10, "color": "#1F2328"},
+    "callout": {"fontFace": "Segoe UI Semibold", "fontSize": 24, "color": "#1F3A5F"}
+  }
+}
